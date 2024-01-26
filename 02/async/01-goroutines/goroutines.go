@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	iterationsNum = 6
-	goroutinesNum = 6
+	iterationsNum = 7
+	goroutinesNum = 7
 )
 
 func doWork(th int) {

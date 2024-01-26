@@ -19,9 +19,9 @@ func startWorker(workerNum int, in <-chan string) {
 
 func main() {
 	runtime.GOMAXPROCS(0)               // попробуйте с 0 (все доступные) и 1
-	worketInput := make(chan string, 2) // попробуйте увеличить размер канала
+	workerInput := make(chan string, 2) // попробуйте увеличить размер канала
 	for i := 0; i < goroutinesNum; i++ {
-		go startWorker(i, worketInput)
+		go startWorker(i, workerInput)
 	}
 
 	months := []string{"Январь", "Февраль", "Март",
@@ -31,9 +31,10 @@ func main() {
 	}
 
 	for _, monthName := range months {
-		worketInput <- monthName
+		workerInput <- monthName
 	}
-	close(worketInput) // попробуйте закомментировать
+
+	// close(workerInput) // попробуйте закомментировать
 
 	time.Sleep(time.Millisecond)
 }
