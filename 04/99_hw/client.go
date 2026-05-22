@@ -105,7 +105,7 @@ func (srv *SearchClient) FindUsers(req SearchRequest) (*SearchResponse, error) {
 		if err != nil {
 			return nil, fmt.Errorf("cant unpack error json: %s", err)
 		}
-		if errResp.Error == "ErrorBadOrderField" {
+		if errResp.Error == ErrorBadOrderField {
 			return nil, fmt.Errorf("OrderFeld %s invalid", req.OrderField)
 		}
 		return nil, fmt.Errorf("unknown bad request error: %s", errResp.Error)
