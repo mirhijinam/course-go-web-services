@@ -75,7 +75,7 @@ func TestMyApi(t *testing.T) {
 			Query:  "",
 			Status: http.StatusBadRequest,
 			Result: CR{
-				"error": "login must me not empty",
+				"error": "login must be not empty",
 			},
 		},
 		Case{ // получили ошибку общего назначения - ваш код сам подставил 500
@@ -169,7 +169,7 @@ func TestMyApi(t *testing.T) {
 			Status: http.StatusBadRequest,
 			Auth:   true,
 			Result: CR{
-				"error": "login must me not empty",
+				"error": "login must be not empty",
 			},
 		},
 		Case{
@@ -219,7 +219,7 @@ func TestMyApi(t *testing.T) {
 			Status: http.StatusBadRequest,
 			Auth:   true,
 			Result: CR{
-				"error": "status must be one of [user, moderator, admin]",
+				"error": "status must be one of [user moderator admin]",
 			},
 		},
 		Case{ // status по-умолчанию
@@ -261,7 +261,7 @@ func TestOtherApi(t *testing.T) {
 			Status: http.StatusBadRequest,
 			Auth:   true,
 			Result: CR{
-				"error": "class must be one of [warrior, sorcerer, rouge]",
+				"error": "class must be one of [warrior sorcerer rouge]",
 			},
 		},
 		Case{
