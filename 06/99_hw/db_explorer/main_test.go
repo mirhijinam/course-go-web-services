@@ -102,7 +102,7 @@ func TestApis(t *testing.T) {
 		panic(err)
 	}
 
-	ts := httptest.NewServer(handler)
+	ts := httptest.NewServer(&handler)
 
 	cases := []Case{
 		Case{
