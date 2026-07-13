@@ -1,21 +1,15 @@
 .PHONY: install gen test
 
 install:
-	go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.27.1
-	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2.0
+	go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.11
+	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.6.2
 
-gen: check-env
-	protoc --version # 3.19.3
-	protoc-gen-go --version # v1.27.1
-	protoc-gen-go-grpc --version # 1.2.0
-	protoc --go_out=. --go-grpc_out=. service.proto
-	# in combination with 'option go_package = ".";' in service.proto this will generate files in this folder with package main
-	sed -i "" 's/package __/package main/g' *.pb.go 
+gen: 
+	protoc --version
+	protoc-gen-go --version
+	protoc-gen-go-grpc --version
+	protoc --go_out=. --go-grpc_out=. *.proto
+	protoc --go_out=. --go-grpc_out=. *.proto
 
 test:
 	go test -v -race
-
-check-env:
-ifndef GOBIN
-	$(error GOBIN is undefined, set GOBIN so protoc can see installed plugins in PATH)
-endif

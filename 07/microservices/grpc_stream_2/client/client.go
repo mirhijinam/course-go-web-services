@@ -10,7 +10,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	"gws/7/microservices/grpc_stream/translit"
+	"microservices/grpc_stream/translit"
 )
 
 func main() {

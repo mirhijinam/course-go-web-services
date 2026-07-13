@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"gws/7/microservices/grpc_stream/translit"
 	"log"
+	"microservices/grpc_stream/translit"
 	"net"
 
 	"google.golang.org/grpc"

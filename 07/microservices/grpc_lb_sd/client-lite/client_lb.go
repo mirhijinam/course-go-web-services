@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc/resolver"
 	"google.golang.org/grpc/resolver/manual"
 
-	"gws/7/microservices/grpc/session"
+	"microservices/grpc/session"
 
 	consulapi "github.com/hashicorp/consul/api"
 )
@@ -131,7 +131,8 @@ func runOnlineServiceDiscovery(nameResolver *manual.Resolver, servers []string) 
 			}
 		}
 		if updates > 0 {
-			nameResolver.CC.NewAddress(servers)
+			state := resolver.State{Addresses: servers}
+			nameResolver.CC().UpdateState(state)
 		}
 	}
 }

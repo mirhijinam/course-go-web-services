@@ -1,38 +1,36 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"gws/7/microservices/grpc/session"
 	"math/rand"
+	"microservices/grpc/session"
 	"sync"
-
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-
-	"golang.org/x/net/context"
 )
 
 const sessKeyLen = 10
 
 type SessionManager struct {
+	session.UnimplementedAuthCheckerServer
 	mu       sync.RWMutex
-	sessions map[session.SessionID]*session.Session
+	sessions map[string]*session.Session
 	host     string
 }
 
 func NewSessionManager(port string) *SessionManager {
 	return &SessionManager{
-		mu:       sync.RWMutex{},
-		sessions: map[session.SessionID]*session.Session{},
-		host:     port,
+		UnimplementedAuthCheckerServer: session.UnimplementedAuthCheckerServer{},
+		mu:                             sync.RWMutex{},
+		sessions:                       map[string]*session.Session{},
+		host:                           port,
 	}
 }
 
 func (sm *SessionManager) Create(ctx context.Context, in *session.Session) (*session.SessionID, error) {
 	fmt.Println("call Create", in)
-	id := &session.SessionID{RandStringRunes(sessKeyLen)}
+	id := &session.SessionID{ID: RandStringRunes(sessKeyLen)}
 	sm.mu.Lock()
-	sm.sessions[*id] = in
+	sm.sessions[id.ID] = in
 	sm.mu.Unlock()
 	return id, nil
 }
@@ -43,19 +41,19 @@ func (sm *SessionManager) Check(ctx context.Context, in *session.SessionID) (*se
 	fakeLogin := sm.host + " " + in.GetID()
 	return &session.Session{Login: fakeLogin}, nil
 
-	sm.mu.RLock()
-	defer sm.mu.RUnlock()
-	if sess, ok := sm.sessions[*in]; ok {
-		return sess, nil
-	}
-	return nil, grpc.Errorf(codes.NotFound, "session not found")
+	// sm.mu.RLock()
+	// defer sm.mu.RUnlock()
+	// if sess, ok := sm.sessions[in.ID]; ok {
+	// 	return sess, nil
+	// }
+	// return nil, status.Errorf(codes.NotFound, "session not found")
 }
 
 func (sm *SessionManager) Delete(ctx context.Context, in *session.SessionID) (*session.Nothing, error) {
 	fmt.Println("call Delete", in)
 	sm.mu.Lock()
 	defer sm.mu.Unlock()
-	delete(sm.sessions, *in)
+	delete(sm.sessions, in.ID)
 	return &session.Nothing{Dummy: true}, nil
 }
 

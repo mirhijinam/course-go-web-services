@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
-	"gws/7/microservices/grpc_stream/translit"
 	"io"
+	"microservices/grpc_stream/translit"
 
 	tr "github.com/gen1us2k/go-translit"
 )
 
 type TrServer struct {
+	translit.UnimplementedTransliterationServer
 }
 
 func (srv *TrServer) EnRu(inStream translit.Transliteration_EnRuServer) error {
@@ -26,9 +27,10 @@ func (srv *TrServer) EnRu(inStream translit.Transliteration_EnRuServer) error {
 		fmt.Println(inWord.Word, "->", out.Word)
 		inStream.Send(out)
 	}
-	return nil
 }
 
 func NewTr() *TrServer {
-	return &TrServer{}
+	return &TrServer{
+		UnimplementedTransliterationServer: translit.UnimplementedTransliterationServer{},
+	}
 }

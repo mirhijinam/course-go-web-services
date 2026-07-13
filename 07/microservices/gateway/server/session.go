@@ -2,7 +2,7 @@ package main
 
 import (
 	// "../session"
-	"gws/7/microservices/gateway/session"
+	"microservices/gateway/session"
 
 	"fmt"
 	"math/rand"

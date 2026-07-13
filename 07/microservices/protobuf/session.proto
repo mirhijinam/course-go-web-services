@@ -4,6 +4,8 @@ syntax = "proto3";
 
 package main;
 
+option go_package = "./;main";
+
 message SessionID {
   string ID = 1;
 }

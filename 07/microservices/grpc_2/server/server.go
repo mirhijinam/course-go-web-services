@@ -1,16 +1,15 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"gws/7/microservices/grpc/session"
 	"log"
+	"microservices/grpc/session"
 	"net"
 	"time"
 
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/tap"
-
-	"golang.org/x/net/context"
 
 	"google.golang.org/grpc"
 )

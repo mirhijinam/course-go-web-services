@@ -4,12 +4,12 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"microservices/grpc/session"
 	"net/http"
 	"time"
 
 	"google.golang.org/grpc"
-
-	"gws/7/microservices/grpc/session"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 var loginFormTmpl = []byte(`
@@ -89,13 +89,12 @@ func loginPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-
-	grcpConn, err := grpc.Dial(
+	grcpConn, err := grpc.NewClient(
 		"127.0.0.1:8081",
-		grpc.WithInsecure(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
-		log.Fatalf("cant connect to grpc")
+		log.Fatalf("cannot connect to grpc")
 	}
 	defer grcpConn.Close()
 

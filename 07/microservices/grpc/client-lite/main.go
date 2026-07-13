@@ -6,18 +6,18 @@ import (
 	"log"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
-	"gws/7/microservices/grpc/session"
+	"microservices/grpc/session"
 )
 
 func main() {
-
-	grcpConn, err := grpc.Dial(
+	grcpConn, err := grpc.NewClient(
 		"127.0.0.1:8081",
-		grpc.WithInsecure(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
-		log.Fatalf("cant connect to grpc")
+		log.Fatalf("cannot connect to grpc")
 	}
 	defer grcpConn.Close()
 
@@ -25,31 +25,31 @@ func main() {
 
 	ctx := context.Background()
 
-	// создаем сессию
+	// Создаем сессию.
 	sessId, err := sessManager.Create(ctx,
 		&session.Session{
 			Login:     "rvasily",
 			Useragent: "chrome",
 		})
-	fmt.Println("sessId", sessId, err)
+	fmt.Println("session_id", sessId, err)
 
-	// проеряем сессию
+	// Проверяем сессию.
 	sess, err := sessManager.Check(ctx,
 		&session.SessionID{
 			ID: sessId.ID,
 		})
-	fmt.Println("sess", sess, err)
+	fmt.Println("session", sess, err)
 
-	// удаляем сессию
+	// Удаляем сессию.
 	_, err = sessManager.Delete(ctx,
 		&session.SessionID{
 			ID: sessId.ID,
 		})
 
-	// проверяем еще раз
+	// Проверяем еще раз.
 	sess, err = sessManager.Check(ctx,
 		&session.SessionID{
 			ID: sessId.ID,
 		})
-	fmt.Println("sess", sess, err)
+	fmt.Println("session", sess, err)
 }

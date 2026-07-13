@@ -1,8 +1,11 @@
 syntax = "proto3";
 
-// protoc --go_out=plugins=grpc:. *.proto
+// old: protoc --go_out=plugins=grpc:. *.proto
+// new: protoc --go_out=. --go-grpc_out=. session/*.proto
 
 package session;
+
+option go_package = "./session";
 
 message SessionID {
   string ID = 1;

@@ -1,16 +1,16 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"time"
 
-	"golang.org/x/net/context"
-
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
 
-	"gws/7/microservices/grpc/session"
+	"microservices/grpc/session"
 )
 
 func timingInterceptor(
@@ -34,8 +34,6 @@ func timingInterceptor(
 	return err
 }
 
-// -----
-
 type tokenAuth struct {
 	Token string
 }
@@ -50,15 +48,12 @@ func (c *tokenAuth) RequireTransportSecurity() bool {
 	return false
 }
 
-// -----
-
 func main() {
-
-	grcpConn, err := grpc.Dial(
+	grcpConn, err := grpc.NewClient(
 		"127.0.0.1:8081",
 		grpc.WithUnaryInterceptor(timingInterceptor),
 		grpc.WithPerRPCCredentials(&tokenAuth{"100500"}),
-		grpc.WithInsecure(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
 		log.Fatalf("cant connect to grpc")
@@ -67,18 +62,15 @@ func main() {
 
 	sessManager := session.NewAuthCheckerClient(grcpConn)
 
-	ctx := context.Background()
 	md := metadata.Pairs(
 		"api-req-id", "123",
 		"subsystem", "cli",
 	)
-	ctx = metadata.NewOutgoingContext(ctx, md)
-
-	// ----------------------------------------------------
+	ctx := metadata.NewOutgoingContext(context.Background(), md)
 
 	var header, trailer metadata.MD
 
-	// создаем сессию
+	// Создаем сессию.
 	sessId, err := sessManager.Create(ctx,
 		&session.Session{
 			Login:     "rvasily",
@@ -91,23 +83,26 @@ func main() {
 	fmt.Println("header", header)
 	fmt.Println("trailer", trailer)
 
-	// проеряем сессию
+	// Проеряем сессию.
 	sess, err := sessManager.Check(ctx,
 		&session.SessionID{
 			ID: sessId.ID,
-		})
+		},
+	)
 	fmt.Println("sess", sess, err)
 
-	// удаляем сессию
+	// Удаляем сессию.
 	_, err = sessManager.Delete(ctx,
 		&session.SessionID{
 			ID: sessId.ID,
-		})
+		},
+	)
 
-	// проверяем еще раз
+	// Проверяем еще раз.
 	sess, err = sessManager.Check(ctx,
 		&session.SessionID{
 			ID: sessId.ID,
-		})
+		},
+	)
 	fmt.Println("sess", sess, err)
 }

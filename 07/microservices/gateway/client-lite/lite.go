@@ -8,7 +8,7 @@ import (
 	"google.golang.org/grpc"
 
 	// "../session"
-	"gws/7/microservices/gateway/session"
+	"microservices/gateway/session"
 )
 
 func main() {

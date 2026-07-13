@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
-	"gws/7/microservices/grpc/session"
 	"log"
+	"microservices/grpc/session"
 	"net"
 	"strconv"
 
@@ -18,10 +18,8 @@ var (
 	consulAddr = flag.String("consul", "127.0.0.1:8500", "consul addr (8500 in original consul)")
 )
 
-/*
-	go run *.go --grpc="8081" --consul="127.0.0.1:8500"
-	go run *.go --grpc="8082" --consul="127.0.0.1:8500"
-*/
+// go run *.go --grpc="8081" --consul="127.0.0.1:8500"
+// go run *.go --grpc="8082" --consul="127.0.0.1:8500"
 
 func main() {
 	flag.Parse()
@@ -35,8 +33,7 @@ func main() {
 
 	server := grpc.NewServer()
 
-	session.RegisterAuthCheckerServer(server,
-		NewSessionManager(port))
+	session.RegisterAuthCheckerServer(server, NewSessionManager(port))
 
 	config := consulapi.DefaultConfig()
 	config.Address = *consulAddr

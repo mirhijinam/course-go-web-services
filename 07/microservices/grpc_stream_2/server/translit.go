@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"gws/7/microservices/grpc_stream/translit"
 	"io"
+	"microservices/grpc_stream/translit"
 
 	tr "github.com/gen1us2k/go-translit"
 )

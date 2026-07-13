@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"gws/7/microservices/grpc/session"
 	"log"
+	"microservices/grpc/session"
 	"net"
 
 	"google.golang.org/grpc"
@@ -12,7 +12,7 @@ import (
 func main() {
 	lis, err := net.Listen("tcp", ":8081")
 	if err != nil {
-		log.Fatalln("cant listet port", err)
+		log.Fatalln("cannot listen port", err)
 	}
 
 	server := grpc.NewServer()
