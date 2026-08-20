@@ -284,8 +284,10 @@ func TestApp(t *testing.T) {
 				}{
 					Article: TestArticle{
 						Author: TestProfile{
-							Bio:      tplParams["BIO"],
-							Username: tplParams["USERNAME"],
+							Bio:       tplParams["BIO"],
+							Username:  tplParams["USERNAME"],
+							CreatedAt: FakeTime{true},
+							UpdatedAt: FakeTime{true},
 						},
 						Body:        "Any ideas how to write some intermidiate layer atop collection?",
 						Title:       "How to write golang tests",
@@ -306,6 +308,34 @@ func TestApp(t *testing.T) {
 			},
 		},
 		&ApiTestCase{
+			Name:           "Auth - Login - Second user",
+			Method:         "POST",
+			Body:           "{\"user\":{\"email\":\"{{EMAIL2}}\", \"password\":\"{{PASSWORD}}\"}}",
+			URL:            "{{APIURL}}/users/login",
+			ResponseStatus: 200,
+			Expected: func() interface{} {
+				return &struct {
+					User TestProfile
+				}{
+					User: TestProfile{
+						Email:     tplParams["EMAIL2"],
+						CreatedAt: FakeTime{true},
+						UpdatedAt: FakeTime{true},
+						Username:  tplParams["USERNAME2"],
+					},
+				}
+			},
+			Before: nil,
+			After: func(r *http.Response, body []byte, resp interface{}) error {
+				val, err := lookup.LookupString(resp, "User.Token")
+				if err != nil {
+					return err
+				}
+				tplParams["token2"] = val.String()
+				return nil
+			},
+		},
+		&ApiTestCase{
 			Name:           "Articles - Create Article - Second user",
 			Method:         "POST",
 			Body:           `{"article":{"title":"What will be released first, Half-Life 3 or 3-rd part of golang course?", "description":"Who knows topics in new course?", "body":"Will we use JWT-tokens in homework?", "tagList":["halflife3","coursera"]}}`,
@@ -318,7 +348,9 @@ func TestApp(t *testing.T) {
 				}{
 					Article: TestArticle{
 						Author: TestProfile{
-							Username: tplParams["USERNAME2"],
+							Username:  tplParams["USERNAME2"],
+							CreatedAt: FakeTime{true},
+							UpdatedAt: FakeTime{true},
 						},
 						Body:        "Will we use JWT-tokens in homework?",
 						Title:       "What will be released first, Half-Life 3 or 3-rd part of golang course?",
@@ -353,8 +385,11 @@ func TestApp(t *testing.T) {
 						TestArticle{
 							Slug: tplParams["slug1"],
 							Author: TestProfile{
-								Bio:      tplParams["BIO"],
-								Username: tplParams["USERNAME"],
+								Bio:       tplParams["BIO"],
+								Username:  tplParams["USERNAME"],
+								Email:     tplParams["EMAIL"],
+								CreatedAt: FakeTime{true},
+								UpdatedAt: FakeTime{true},
 							},
 							Body:        "Any ideas how to write some intermidiate layer atop collection?",
 							Title:       "How to write golang tests",
@@ -366,7 +401,10 @@ func TestApp(t *testing.T) {
 						TestArticle{
 							Slug: tplParams["slug2"],
 							Author: TestProfile{
-								Username: tplParams["USERNAME2"],
+								Username:  tplParams["USERNAME2"],
+								Email:     tplParams["EMAIL2"],
+								CreatedAt: FakeTime{true},
+								UpdatedAt: FakeTime{true},
 							},
 							Body:        "Will we use JWT-tokens in homework?",
 							Title:       "What will be released first, Half-Life 3 or 3-rd part of golang course?",
@@ -398,7 +436,10 @@ func TestApp(t *testing.T) {
 						TestArticle{
 							Slug: tplParams["slug2"],
 							Author: TestProfile{
-								Username: tplParams["USERNAME2"],
+								Username:  tplParams["USERNAME2"],
+								Email:     tplParams["EMAIL2"],
+								CreatedAt: FakeTime{true},
+								UpdatedAt: FakeTime{true},
 							},
 							Body:        "Will we use JWT-tokens in homework?",
 							Title:       "What will be released first, Half-Life 3 or 3-rd part of golang course?",
@@ -429,7 +470,10 @@ func TestApp(t *testing.T) {
 						TestArticle{
 							Slug: tplParams["slug2"],
 							Author: TestProfile{
-								Username: tplParams["USERNAME2"],
+								Username:  tplParams["USERNAME2"],
+								Email:     tplParams["EMAIL2"],
+								CreatedAt: FakeTime{true},
+								UpdatedAt: FakeTime{true},
 							},
 							Body:        "Will we use JWT-tokens in homework?",
 							Title:       "What will be released first, Half-Life 3 or 3-rd part of golang course?",
@@ -478,7 +522,6 @@ func TestApp(t *testing.T) {
 
 	for _, item := range testCases {
 		ok := t.Run(item.Name, func(t *testing.T) {
-
 			if item.Before != nil {
 				item.Before()
 			}
@@ -510,7 +553,7 @@ func TestApp(t *testing.T) {
 			defer resp.Body.Close()
 			respBody, err := ioutil.ReadAll(resp.Body)
 
-			// t.Logf("\nreq body: %s\nresp body: %s", body, respBody)
+			t.Logf("\n\nreq body: %s\nresp body: %s\n\n", body, respBody)
 
 			if item.ResponseStatus != resp.StatusCode {
 				t.Fatalf("bad status code, want: %v, have:%v", item.ResponseStatus, resp.StatusCode)
